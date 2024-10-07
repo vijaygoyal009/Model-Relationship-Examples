@@ -48,3 +48,96 @@ class Student(models.Model):
 
 
 
+
+
+# many to one relationship
+ 
+class Musician(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.first_name
+
+class Album(models.Model):
+    artist = models.ForeignKey(Musician, on_delete=models.CASCADE , related_name='auth')
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+    
+
+# Explation of many to one relationship
+
+# Forward  ----> Forward is same like a one to one relationship we can directly access parent property
+           
+           
+            # single record
+            # ---------------
+
+
+            # >>> a = Album.objects.filter(name="Ramayan")
+            # >>> a
+            #     <Album: ramayan>
+            # >>> # now i use forward relation to access author first name jo album me he
+            # >>> a.artist.first_name
+            #     'Vijay'
+
+
+
+            # Queryset ---->
+            # ---------------
+
+
+            # >>> for i in Album.objects.all():
+            # ...  print(i.name , i.artist.first_name)
+
+
+
+# Backward ---->
+# ------------------
+    # Jab ham parent model se child ki property ko extract karna chahte he to ham backward relation use karte he
+    # ham yah do tariko se kar sakte he 
+    
+    # first ----> using set.all()
+    # second -----> using releate_name
+
+
+
+    # so lets discuss first approch
+    # using set.all()
+         
+        #  using single record ---->
+        # --------------------------
+
+                    # >>> a = Musician.objects.get(first_name='Vijay')
+                    # >>> a
+                    # <Musician: Vijay>
+                    # >>> a1 = a.album_set.all()
+                    # >>> a1
+                    # <QuerySet [<Album: ramayan>, <Album: mahabharat>, <Album: Bhagwat>]>
+                    # >>> 
+        
+        #   using queryset ----->
+        # -----------------------
+
+                # >>> for i in Musician.objects.all():
+                # ...  print( i.first_name , i.last_name ,i.album_set.all())
+                # ... 
+                # Vijay Goyal <QuerySet [<Album: ramayan>, <Album: mahabharat>, <Album: Bhagwat>]>
+                # Arijit Singh <QuerySet [<Album: Pyari samjh gyi>, <Album: Geetanjali>]>
+                # Ramesh Jain <QuerySet [<Album: All Is well>, <Album: Bhagwat1>]>
+                # Raju Yadav <QuerySet [<Album: Shivayam>, <Album: Ganesha>, <Album: Radhe-Shyam>]>
+                # Mohan Pal <QuerySet [<Album: Prakasham>]>
+                # Surendra Parjapat <QuerySet []>
+
+
+
+     # Using related_name
+
+    #             >>> a = Musician.objects.get(first_name='Vijay')
+    #             >>> a
+    #             <Musician: Vijay>
+    #             >>> a1 = a.auth.all()
+    #             >>> a1
+    #             <QuerySet [<Album: ramayan>, <Album: mahabharat>, <Album: Bhagwat>]>
